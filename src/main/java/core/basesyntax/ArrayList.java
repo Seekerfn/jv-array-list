@@ -38,9 +38,7 @@ public class ArrayList<T> implements List<T> {
     @Override
     public void add(T value, int index) {
 
-        if (index == size) {
-
-        } else {
+        if (index != size) {
             checkIndex(index);
         }
         elementData = growIfArrayFull();
@@ -89,7 +87,7 @@ public class ArrayList<T> implements List<T> {
     public T remove(T element) throws NoSuchElementException {
         for (int i = 0; i < size; i++) {
             if (Objects.equals(elementData[i], element)) {
-                return remove(elementData[i]);
+                return remove(i);
             }
         }
         throw new NoSuchElementException("No such element found");
@@ -98,7 +96,7 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public int size() {
-        return elementData.length;
+        return size;
     }
 
     @Override
