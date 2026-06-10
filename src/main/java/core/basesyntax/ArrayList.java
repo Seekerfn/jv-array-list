@@ -1,7 +1,6 @@
 package core.basesyntax;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 public class ArrayList<T> implements List<T> {
 
@@ -15,16 +14,25 @@ public class ArrayList<T> implements List<T> {
         }
     }
 
-    public T[] growIfArrayFull() {
-        int oldCapacity = elementData.length;
-
-        int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity == oldCapacity) {
-            newCapacity++;
+    private void checkIndexForAdd(int index) {
+        if (index < 0 || index > size) {
+            throw new ArrayListIndexOutOfBoundsException(
+                    "Index: " + index + ", Size: " + size
+            );
         }
+    }
+
+    private T[] growIfArrayFull() {
+        if (size < elementData.length) {
+            return elementData;
+        }
+
+        int oldCapacity = elementData.length;
+        int newCapacity = oldCapacity + (oldCapacity >> 1);
 
         T[] newArray = (T[]) new Object[newCapacity];
         System.arraycopy(elementData, 0, newArray, 0, size);
+
         return newArray;
     }
 
@@ -32,17 +40,22 @@ public class ArrayList<T> implements List<T> {
     public void add(T value) {
         elementData = growIfArrayFull();
         elementData[size++] = value;
-
     }
 
     @Override
     public void add(T value, int index) {
+        checkIndexForAdd(index);
 
-        if (index != size) {
-            checkIndex(index);
-        }
         elementData = growIfArrayFull();
-        System.arraycopy(elementData, index, elementData, index + 1, size - index);
+
+        System.arraycopy(
+                elementData,
+                index,
+                elementData,
+                index + 1,
+                size - index
+        );
+
         elementData[index] = value;
         size++;
     }
@@ -57,17 +70,14 @@ public class ArrayList<T> implements List<T> {
     @Override
     public T get(int index) {
         checkIndex(index);
-
         T element = elementData[index];
         return element;
-
     }
 
     @Override
     public void set(T value, int index) {
         checkIndex(index);
         elementData[index] = value;
-
     }
 
     @Override
@@ -86,7 +96,8 @@ public class ArrayList<T> implements List<T> {
     @Override
     public T remove(T element) throws NoSuchElementException {
         for (int i = 0; i < size; i++) {
-            if (Objects.equals(elementData[i], element)) {
+            if ((elementData[i] == null && element == null)
+                    || (elementData[i] != null && elementData[i].equals(element))) {
                 return remove(i);
             }
         }
